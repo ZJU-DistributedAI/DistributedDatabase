@@ -1,22 +1,21 @@
 package main
 
 import (
-	"../core"
+	"bytes"
 	"fmt"
+	"os/exec"
+	"strings"
 )
 
 func main(){
 
-	lsi := core.LogicServiceImp{}
-	isi := core.InitServiceImp{}
-	isi.InitConfiguration("../conf/configuration.yaml")
-	ipfsHash := lsi.UploadAofFileToIpfs()
-	fmt.Println("ipfsHash: ",ipfsHash)
-
-	result := lsi.AcquireFileFromIpfs(ipfsHash)
-	if result{
-		fmt.Println("success")
-	}else{
-		fmt.Println("fail")
+	cmds := strings.Split("docker exec ipfs"," ")
+	cmd := exec.Command(cmds[0], cmds[1], cmds[2],"ipfs", "add", "-r","/upload2/test.txt")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil{
+		fmt.Println("执行出错: ", err)
 	}
+	fmt.Println(out.String())
 }
